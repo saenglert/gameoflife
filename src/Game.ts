@@ -3,13 +3,15 @@ import { output } from "./utils";
 
 export class Game {
     size: number;
+    seeds: number;
     state: number[][];
     canvas: HTMLCanvasElement;
     context: CanvasRenderingContext2D;
 
-    constructor(size: number = 16) {
+    constructor(size: number = 16, seeds: number = 20) {
         this.size = size;
-        this.state = this.setInitialState(size);
+        this.seeds = seeds;
+        this.state = this.setInitialState();
         this.canvas = this.getCanvas();
         this.context = this.getContext();
 
@@ -42,15 +44,27 @@ export class Game {
        return this.context;
     }
 
-    setInitialState = (size: number): number[][] => {
-        const state: number[][] = [];
-        for (let x = 0; x < size; x++) {
-            state[x] = [];
-            for (let y = 0; y < size; y++) {
-                state[x][y] = Math.round(Math.random() * 0.6);
-            }
+    setInitialState = (): number[][] => {
+        const state: number[][] = this.getZeroState();
+
+        for (let i = 0; i < this.seeds; i++) {
+            const x = Math.floor(Math.random() * this.size);
+            const y = Math.floor(Math.random() * this.size);
+
+            state[x][y] = 1;
         }
 
+        return state;
+    }
+
+    getZeroState = () => {
+        const state: number[][] = [];
+        for (let x = 0; x < this.size; x++) {
+            state[x] = [];
+            for (let y = 0; y < this.size; y++) {
+                state[x][y] = 0
+            }
+        }
         return state;
     }
 
@@ -71,7 +85,7 @@ export class Game {
     }
 
     step = () => {
-        const newState = this.setInitialState(this.size);
+        const newState = this.getZeroState();
         for (let x = 0; x < this.size; x++) {
             for (let y = 0; y < this.size; y++) {
                 const currentCell = this.state[x][y];
